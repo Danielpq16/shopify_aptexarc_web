@@ -1,0 +1,148 @@
+{%- comment -%}
+  ============================================================================
+  templates/page.contact.liquid — Contact page with native Shopify form.
+  Replaces v2/contact.html. Differences vs the static file:
+    1. The hero email link still works for direct mail, but is now joined
+       by a real {% form 'contact' %} block. Submissions land in the Shopify
+       admin (Online Store ▸ Pages ▸ Contact form messages) and trigger the
+       configured notification email.
+    2. The "Common Queries" link grid stays as static markup since they're
+       just navigation hints, identical to the HTML.
+  In Shopify admin, create a Page with handle "contact" and template suffix
+  "contact" so this file is used.
+  ============================================================================
+{%- endcomment -%}
+<main class="min-h-screen flex flex-col items-center justify-center px-margin pt-xl pb-xl">
+
+  <!-- Hero / Brand Identity ===================================================== -->
+  <section class="max-w-3xl w-full text-center space-y-lg mb-xl">
+    <div class="space-y-sm">
+      <div class="flex justify-center mb-md">
+        <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
+          <img alt="{{ shop.name }}"
+               class="h-48 w-auto object-contain"
+               src="{{ 'logo_white_bg_removed_sin_fondo.png' | asset_url }}">
+        </a>
+      </div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+        {{ page.title | default: 'Contact us for help' }}
+      </h1>
+      <p class="font-body-lg text-body-lg text-primary selection:bg-primary-container selection:text-on-primary-container">
+        <a href="mailto:aptexarcsupport@gmail.com" class="hover:underline">aptexarcsupport@gmail.com</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact form ============================================================== -->
+  <section class="max-w-2xl w-full mb-xl">
+    {%- comment -%}
+      {% form 'contact' %} renders a real Shopify form. Shopify auto-injects
+      a CSRF token, validates required fields, and emits form.errors after
+      submission. We mirror the brand's input chrome (dark surface, primary
+      focus border) and surface success / error messages inline.
+    {%- endcomment -%}
+    {% form 'contact', class: 'bg-surface-container border border-outline-variant p-md flex flex-col gap-md', novalidate: 'novalidate' %}
+
+      {%- if form.posted_successfully? -%}
+        <div class="flex items-center gap-xs text-primary font-body-md p-sm border border-primary/40 bg-primary/10" role="status" aria-live="polite">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span>{{ 'contact.form.post_success' | t | default: "Thanks for getting in touch — we'll reply within 24 hours." }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if form.errors -%}
+        <div class="flex flex-col gap-xs text-error font-body-md p-sm border border-error/40 bg-error/10" role="alert">
+          <span class="flex items-center gap-xs">
+            <span class="material-symbols-outlined">error</span>
+            <span>Please fix the highlighted fields and try again.</span>
+          </span>
+          <ul class="text-label-sm font-label-sm list-disc list-inside">
+            {%- for field in form.errors -%}
+              <li>{{ form.errors.translated_fields[field] }} {{ form.errors.messages[field] }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+        <label class="flex flex-col gap-xs">
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Name</span>
+          <input type="text"
+                 name="contact[name]"
+                 value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                 required
+                 class="bg-surface border border-outline-variant px-sm py-2 text-on-surface focus:border-primary outline-none font-body-md">
+        </label>
+        <label class="flex flex-col gap-xs">
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Email</span>
+          <input type="email"
+                 name="contact[email]"
+                 value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                 required
+                 class="bg-surface border border-outline-variant px-sm py-2 text-on-surface focus:border-primary outline-none font-body-md">
+        </label>
+      </div>
+
+      <label class="flex flex-col gap-xs">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Phone (optional)</span>
+        <input type="tel"
+               name="contact[phone]"
+               value="{% if form.phone %}{{ form.phone }}{% endif %}"
+               class="bg-surface border border-outline-variant px-sm py-2 text-on-surface focus:border-primary outline-none font-body-md">
+      </label>
+
+      <label class="flex flex-col gap-xs">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Message</span>
+        <textarea name="contact[body]"
+                  rows="5"
+                  required
+                  class="bg-surface border border-outline-variant px-sm py-2 text-on-surface focus:border-primary outline-none font-body-md resize-y">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+      </label>
+
+      <button type="submit"
+              class="self-start bg-primary-container text-on-primary-container px-lg py-sm font-label-sm text-label-sm tracking-widest hover:brightness-110 active:scale-95 transition-all">
+        SEND MESSAGE
+      </button>
+    {% endform %}
+  </section>
+
+  <!-- Common Queries (static link grid, same as contact.html) =================== -->
+  <section class="max-w-max-width w-full grid grid-cols-1 md:grid-cols-12 gap-gutter">
+    <div class="bg-surface-container border border-outline-variant p-md relative overflow-hidden group md:col-span-12">
+      <div class="relative z-10">
+        <h3 class="font-headline-md text-headline-md mb-sm">Common Queries</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+          <a class="group/link flex items-center justify-between p-sm border border-outline-variant hover:border-primary transition-colors" href="#shipping-tracking">
+            <span class="font-label-sm text-label-sm">SHIPPING TRACKING</span>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors">arrow_forward</span>
+          </a>
+          <a class="group/link flex items-center justify-between p-sm border border-outline-variant hover:border-primary transition-colors" href="#warranty-claims">
+            <span class="font-label-sm text-label-sm">WARRANTY CLAIMS</span>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors">arrow_forward</span>
+          </a>
+          <a class="group/link flex items-center justify-between p-sm border border-outline-variant hover:border-primary transition-colors" href="#software-updates">
+            <span class="font-label-sm text-label-sm">SOFTWARE UPDATES</span>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors">arrow_forward</span>
+          </a>
+          <a class="group/link flex items-center justify-between p-sm border border-outline-variant hover:border-primary transition-colors" href="#device-registration">
+            <span class="font-label-sm text-label-sm">DEVICE REGISTRATION</span>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover/link:text-primary transition-colors">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+      <div class="absolute -right-12 -bottom-12 opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">
+        <span class="material-symbols-outlined text-[160px]">help_outline</span>
+      </div>
+    </div>
+  </section>
+
+  {%- comment -%}
+    Optional: render the page body content from admin (page.content) so the
+    merchant can append paragraphs under the form via the Shopify editor.
+  {%- endcomment -%}
+  {%- if page.content != blank -%}
+    <section class="max-w-3xl w-full mt-xl prose prose-invert text-on-surface-variant">
+      {{ page.content }}
+    </section>
+  {%- endif -%}
+</main>

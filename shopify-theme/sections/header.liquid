@@ -1,0 +1,67 @@
+{%- comment -%}
+  ============================================================================
+  sections/header.liquid — Sticky top nav shared by every template.
+  Mirrors the <header><nav> block that the static .html files repeat
+  (one almost-identical copy per page). Active-state styling uses Shopify's
+  `template` object so the green underline lights up on the matching page.
+  ============================================================================
+{%- endcomment -%}
+<header class="bg-surface/80 backdrop-blur-md border-b border-outline-variant top-0 sticky z-50">
+  <nav class="flex justify-between items-center w-full px-margin py-4 max-w-max-width mx-auto">
+
+    {%- comment -%} Logo → home. Asset is uploaded under assets/. {%- endcomment -%}
+    <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} home">
+      <img alt="{{ shop.name }}"
+           class="h-10 w-auto object-contain"
+           src="{{ 'logo_white_bg_removed_sin_fondo.png' | asset_url }}"
+           width="80" height="40">
+    </a>
+
+    <div class="hidden md:flex items-center space-x-lg">
+
+      {%- comment -%}
+        "Store" anchors to the colour grid on the home page (#colors).
+        On the home template itself we just scroll; on every other page we
+        navigate to the home and jump.
+      {%- endcomment -%}
+      <a class="font-label-sm text-label-sm transition-colors {% if template == 'index' %}text-primary border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-on-surface{% endif %}"
+         href="{{ routes.root_url }}#colors">Store</a>
+
+      {%- comment -%}
+        About / Support route to Shopify pages by handle. Admin must create
+        pages with handles "about" and "contact" (or update the handles below).
+      {%- endcomment -%}
+      <a class="font-label-sm text-label-sm transition-colors {% if template contains 'page' and page.handle == 'about' %}text-primary border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-on-surface{% endif %}"
+         href="{{ pages.about.url | default: '/pages/about' }}">About us</a>
+
+      <a class="font-label-sm text-label-sm transition-colors {% if template contains 'page' and page.handle == 'contact' %}text-primary border-b-2 border-primary pb-1{% else %}text-on-surface-variant hover:text-on-surface{% endif %}"
+         href="{{ pages.contact.url | default: '/pages/contact' }}">Support</a>
+    </div>
+
+    <div class="flex items-center space-x-md">
+      {%- comment -%}
+        Cart icon links to the native cart page. The bullet badge appears only
+        when items are present (replaces the hardcoded green dot from the
+        static product.html).
+      {%- endcomment -%}
+      <a href="{{ routes.cart_url }}"
+         class="relative hover:bg-surface-variant/10 transition-all p-xs rounded-lg active:scale-95 duration-200"
+         aria-label="Cart, {{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %}">
+        <span class="material-symbols-outlined text-primary">shopping_cart</span>
+        {%- if cart.item_count > 0 -%}
+          <span class="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 bg-primary text-on-primary rounded-full font-label-sm text-[10px] flex items-center justify-center">{{ cart.item_count }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+  </nav>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [],
+  "presets": [
+    { "name": "Header" }
+  ]
+}
+{% endschema %}

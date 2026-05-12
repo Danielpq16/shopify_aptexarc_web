@@ -1,0 +1,47 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content"
+    },
+    "search": {
+      "placeholder": "Search"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Shopping Cart",
+      "empty": "Your cart is empty",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "shipping_calculated": "Calculated next step",
+      "estimated_total": "Estimated Total",
+      "checkout": "Checkout now",
+      "remove": "Remove",
+      "continue_shopping": "Continue Shopping",
+      "promo_code": "Promo code",
+      "apply": "Apply",
+      "promo_applied": "Promo: {{ code }} ({{ percent }}%)",
+      "promo_invalid": "Invalid promo code.",
+      "promo_empty": "Please enter a code."
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "in_stock": "In stock",
+      "color": "Color",
+      "quantity": "Quantity"
+    }
+  },
+  "contact": {
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "message": "Message",
+      "send": "Send",
+      "post_success": "Thanks for getting in touch — we'll reply within 24 hours."
+    }
+  }
+}

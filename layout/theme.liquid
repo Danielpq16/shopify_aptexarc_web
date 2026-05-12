@@ -107,14 +107,14 @@
 <body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
 
   {%- comment -%} Shared top navigation — see sections/header.liquid {%- endcomment -%}
-  {% sections 'header-group' %}
+  {% sections 'header' %}
 
   <main role="main" id="MainContent">
     {{ content_for_layout }}
   </main>
 
   {%- comment -%} Shared footer — see sections/footer.liquid {%- endcomment -%}
-  {% sections 'footer-group' %}
+  {% sections 'footer' %}
 
 </body>
 </html>

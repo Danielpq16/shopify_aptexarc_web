@@ -1,0 +1,205 @@
+{%- comment -%}
+  ============================================================================
+  templates/index.liquid — Home page.
+  Replaces v2/index.html. Differences vs the static file:
+    1. Header / footer come from layout/theme.liquid (sections).
+    2. Hero is rendered via the configurable `sections/hero.liquid`.
+    3. The colour grid iterates a real Shopify product's variants
+       (settings.featured_product, fallback handle "r36s") instead of seven
+       hard-coded <a> cards. Each card now jumps to /products/r36s?variant=ID
+       so the product page can preselect the colour.
+  Specs, Intuitive Controls, lifestyle gallery, trust strip and FAQ stay as
+  static markup per the original brief.
+  ============================================================================
+{%- endcomment -%}
+
+{%- comment -%} Hero — see sections/hero.liquid for schema + customizer. {%- endcomment -%}
+{% section 'hero' %}
+
+{%- comment -%}
+  Resolve the featured product the colour grid renders. Order of preference:
+    1. The product picked in Theme Settings ➜ Brand ➜ R36S product.
+    2. The product whose handle is "r36s".
+  If both are missing the section renders a friendly empty state so the page
+  never crashes on a fresh install.
+{%- endcomment -%}
+{%- assign r36s = settings.featured_product -%}
+{%- if r36s == blank or r36s == empty -%}
+  {%- assign r36s = all_products['r36s'] -%}
+{%- endif -%}
+
+<!-- Color Selector ============================================================ -->
+<section class="py-xl px-margin max-w-max-width mx-auto" id="colors">
+  <div class="text-center mb-xl">
+    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Choose your color</h2>
+    <div class="h-base w-sm bg-primary mx-auto"></div>
+  </div>
+
+  {%- if r36s != blank and r36s.variants.size > 0 -%}
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-md">
+      {%- comment -%}
+        One card per variant. variant.option1 is the colour name when the
+        product has a single "Color" option. variant.featured_image renders
+        the photo uploaded against that variant in admin.
+      {%- endcomment -%}
+      {%- for variant in r36s.variants -%}
+        {%- assign variant_image = variant.featured_image | default: variant.image | default: r36s.featured_image -%}
+        <a class="group border border-outline-variant bg-surface-container p-sm hover:border-primary transition-colors {% unless variant.available %}opacity-60{% endunless %}"
+           href="{{ r36s.url }}?variant={{ variant.id }}"
+           aria-label="View {{ variant.option1 | default: variant.title }} R36S">
+          <div class="aspect-square bg-surface-container-highest mb-sm overflow-hidden">
+            {%- if variant_image != blank -%}
+              <img alt="{{ variant.option1 | default: variant.title }} R36S"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                   src="{{ variant_image | image_url: width: 600 }}"
+                   loading="lazy"
+                   width="600" height="600">
+            {%- endif -%}
+          </div>
+          <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-primary">
+            {{ variant.option1 | default: variant.title }}
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    {%- comment -%} Empty state — only seen when no product is configured. {%- endcomment -%}
+    <p class="text-center text-on-surface-variant font-body-md">
+      Configure a product in <em>Theme settings ▸ Brand ▸ R36S product</em> to populate this grid.
+    </p>
+  {%- endif -%}
+</section>
+
+<!-- Hardware Specs (static) ==================================================== -->
+<section class="bg-surface-container-low py-xl">
+  <div class="max-w-max-width mx-auto px-margin grid md:grid-cols-2 gap-xl items-center">
+    <div class="order-2 md:order-1">
+      <img alt="Machined for performance component view"
+           class="w-full rounded-lg border border-outline-variant"
+           src="{{ 'specs.png' | asset_url }}"
+           loading="lazy">
+    </div>
+    <div class="order-1 md:order-2">
+      <h2 class="font-headline-lg text-headline-lg text-on-surface mb-lg">Machined for performance</h2>
+      <ul class="space-y-md">
+        <li class="flex items-start gap-sm border-b border-outline-variant pb-sm">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">RK3326 Quad-Core</h3>
+            <p class="text-on-surface-variant font-body-md">Optimized 1.5GHz 64-bit processing for fluid emulation.</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-sm border-b border-outline-variant pb-sm">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">3.5" IPS 640x480</h3>
+            <p class="text-on-surface-variant font-body-md">Fully laminated display with vibrant colors and wide viewing angles.</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-sm border-b border-outline-variant pb-sm">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">1GB DDR3L RAM</h3>
+            <p class="text-on-surface-variant font-body-md">High-speed memory for seamless menu navigation and loading.</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-sm border-b border-outline-variant pb-sm">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">Linux ArkOS 2.0</h3>
+            <p class="text-on-surface-variant font-body-md">The gold standard in open-source handheld operating systems.</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-sm border-b border-outline-variant pb-sm">
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface">3000mAh Battery</h3>
+            <p class="text-on-surface-variant font-body-md">Up to 8 hours of continuous play on a single charge.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Button Functions (static) ================================================== -->
+<section class="py-xl px-margin max-w-max-width mx-auto">
+  <div class="text-center mb-xl">
+    <h2 class="font-headline-lg text-headline-lg text-on-surface">Intuitive Controls</h2>
+    <p class="text-on-surface-variant mb-lg">Master the interface with custom key mapping.</p>
+  </div>
+  <div class="flex justify-center">
+    <img alt="Intuitive Controls Key Functions"
+         class="w-full max-w-2xl rounded-lg border border-outline-variant"
+         src="{{ 'key function.png' | asset_url }}"
+         loading="lazy">
+  </div>
+</section>
+
+<!-- Lifestyle Gallery (static) ================================================= -->
+<section class="bg-surface-container-lowest py-xl">
+  <div class="max-w-max-width mx-auto px-margin">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+      <div class="aspect-square overflow-hidden border border-outline-variant bg-surface-container">
+        <img alt="AptexArc R36S lifestyle 1"
+             class="w-full h-full object-cover"
+             src="{{ 'publish 1.png' | asset_url }}"
+             loading="lazy">
+      </div>
+      <div class="aspect-square overflow-hidden border border-outline-variant bg-surface-container">
+        <img alt="AptexArc R36S lifestyle 2"
+             class="w-full h-full object-cover"
+             src="{{ 'publish 2.png' | asset_url }}"
+             loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Section (static) ===================================================== -->
+<section class="py-xl px-margin max-w-max-width mx-auto border-t border-outline-variant">
+  <div class="gap-lg text-center flex flex-col md:flex-row md:justify-center">
+    <div class="p-md max-w-xs">
+      <span class="material-symbols-outlined text-display-xl text-primary mb-md">verified_user</span>
+      <h3 class="font-headline-md text-headline-md text-on-surface mb-xs">12-Month Warranty</h3>
+      <p class="text-on-surface-variant font-body-md">Comprehensive coverage against any hardware defects, guaranteed.</p>
+    </div>
+    <div class="p-md max-w-xs">
+      <span class="material-symbols-outlined text-display-xl text-primary mb-md">support_agent</span>
+      <h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Real Support</h3>
+      <p class="text-on-surface-variant font-body-md">No bots. Connect with our technical team for help.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ (static, native <details>) ============================================= -->
+<section class="py-xl px-margin max-w-[800px] mx-auto">
+  <div class="text-center mb-xl">
+    <h2 class="font-headline-lg text-headline-lg text-on-surface">Common Questions</h2>
+  </div>
+  <div class="space-y-md">
+    <details class="group border-b border-outline-variant pb-md">
+      <summary class="flex justify-between items-center cursor-pointer list-none">
+        <span class="font-headline-md text-headline-md text-on-surface">Are games included?</span>
+        <span class="material-symbols-outlined text-primary group-open:rotate-45 transition-transform">add</span>
+      </summary>
+      <p class="mt-md text-on-surface-variant font-body-md">Yes, the R36S comes with a high-speed microSD card pre-loaded with a curated selection of thousands of classic titles across 20+ retro systems.</p>
+    </details>
+    <details class="group border-b border-outline-variant pb-md">
+      <summary class="flex justify-between items-center cursor-pointer list-none">
+        <span class="font-headline-md text-headline-md text-on-surface">What is the battery life?</span>
+        <span class="material-symbols-outlined text-primary group-open:rotate-45 transition-transform">add</span>
+      </summary>
+      <p class="mt-md text-on-surface-variant font-body-md">Depending on screen brightness and system emulation intensity, you can expect between 6 to 8 hours of continuous gameplay from the 3000mAh battery.</p>
+    </details>
+    <details class="group border-b border-outline-variant pb-md">
+      <summary class="flex justify-between items-center cursor-pointer list-none">
+        <span class="font-headline-md text-headline-md text-on-surface">Can I connect it to a TV?</span>
+        <span class="material-symbols-outlined text-primary group-open:rotate-45 transition-transform">add</span>
+      </summary>
+      <p class="mt-md text-on-surface-variant font-body-md">The R36S supports OTG connection for controllers and can be connected to external displays via the HDMI-out port using a compatible adapter.</p>
+    </details>
+    <details class="group border-b border-outline-variant pb-md">
+      <summary class="flex justify-between items-center cursor-pointer list-none">
+        <span class="font-headline-md text-headline-md text-on-surface">Which payment methods are accepted?</span>
+        <span class="material-symbols-outlined text-primary group-open:rotate-45 transition-transform">add</span>
+      </summary>
+      <p class="mt-md text-on-surface-variant font-body-md">We accept all major credit cards, PayPal, and Apple Pay through our secure, encrypted checkout process.</p>
+    </details>
+  </div>
+</section>

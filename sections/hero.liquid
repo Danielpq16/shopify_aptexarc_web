@@ -1,0 +1,98 @@
+{%- comment -%}
+  ============================================================================
+  sections/hero.liquid — Configurable hero (banner image + headline + CTA).
+  Equivalent of the static <section> hero in index.html. All copy and the
+  banner asset are editable from the Theme Customizer (schema below).
+  Default values fall back to the AptexArc R36S launch banner so the section
+  renders correctly on a fresh install.
+  ============================================================================
+{%- endcomment -%}
+
+{%- comment -%}
+  Resolve the banner image:
+  - section.settings.banner is a Shopify image_picker value (Image object).
+  - If admin hasn't picked one, fall back to the bundled asset
+    "banner bueno.png" so the page never blanks out.
+{%- endcomment -%}
+{%- if section.settings.banner != blank -%}
+  {%- assign banner_url = section.settings.banner | image_url: width: 2400 -%}
+  {%- assign banner_alt = section.settings.banner.alt | default: section.settings.heading -%}
+{%- else -%}
+  {%- assign banner_url = 'banner bueno.png' | asset_url -%}
+  {%- assign banner_alt = section.settings.heading | default: 'AptexArc R36S lineup banner' -%}
+{%- endif -%}
+
+<section class="relative w-full bg-surface-container-lowest overflow-hidden">
+  {%- comment -%}
+    block w-full h-auto preserves the banner's natural aspect ratio so it never
+    crops at any side — same behaviour we shipped in index.html after the
+    "no recortes el banner" feedback.
+  {%- endcomment -%}
+  <img alt="{{ banner_alt | escape }}"
+       class="block w-full h-auto"
+       src="{{ banner_url }}"
+       loading="eager"
+       fetchpriority="high">
+
+  {%- comment -%} Overlay copy + CTA, anchored below the banner. {%- endcomment -%}
+  <div class="relative z-10 text-center px-margin max-w-4xl mx-auto py-lg">
+    <h1 class="font-display-xl text-display-xl text-on-surface mb-md">
+      {{ section.settings.heading | default: 'R36S Game Console' }}
+    </h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">
+      {{ section.settings.subheading | default: 'Classic Games, New Ways. Precision engineering meets nostalgic excellence.' }}
+    </p>
+    {%- if section.settings.cta_label != blank -%}
+      <a class="inline-block bg-primary-container text-on-primary-container px-xl py-sm font-label-sm text-label-sm tracking-widest hover:brightness-110 active:scale-95 transition-all"
+         href="{{ section.settings.cta_link | default: '#colors' }}">
+        {{ section.settings.cta_label }}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "class": "section-hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "banner",
+      "label": "Banner image",
+      "info": "Falls back to the bundled `banner bueno.png` asset when empty."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Headline",
+      "default": "R36S Game Console"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Classic Games, New Ways. Precision engineering meets nostalgic excellence."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "SHOP ALL COLORS"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link",
+      "info": "Use #colors to scroll to the colour grid below the hero."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero",
+      "category": "Banner"
+    }
+  ]
+}
+{% endschema %}

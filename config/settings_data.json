@@ -1,6 +1,51 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
-    "featured_product": ""
+    "featured_product": "",
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {}
+      },
+      "hero": {
+        "type": "hero",
+        "settings": {
+          "heading": "R36S Game Console",
+          "subheading": "Classic Games, New Ways. Precision engineering meets nostalgic excellence.",
+          "cta_label": "SHOP ALL COLORS",
+          "cta_link": ""
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    },
+    "content_for_index": [],
+    "blocks": {
+      "15683396631634586217": {
+        "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
+        "disabled": false,
+        "settings": {
+          "button_color": "#000000",
+          "secondary_color": "#88d7a9",
+          "ternary_color": "#6A6A6A",
+          "button_icon": "team",
+          "button_text": "message_us",
+          "button_horizontal_position": "bottom_right",
+          "button_vertical_position": "lowest",
+          "greeting_message": ""
+        }
+      }
+    }
   },
   "presets": {
     "Default": {

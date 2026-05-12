@@ -1,0 +1,22 @@
+{%- assign selected_product = all_products[section.settings.product_handle] -%}
+{%- if selected_product != blank -%}
+  <div class="brand-section">
+    <h2>{{ selected_product.title }}</h2>
+    <p>{{ selected_product.description }}</p>
+  </div>
+{%- else -%}
+  <p>No product selected.</p>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Brand",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product_handle",
+      "label": "R36S product"
+    }
+  ]
+}
+{% endschema %}
